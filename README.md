@@ -12,52 +12,52 @@ Développement complet du jeu MORPION (Tic-Tac-Toe) en langage C, dans un enviro
  Dans docs/Readme.txt
 
 ## Modules principaux
-main.c → menu principal et orchestration
-board.c / player.c → plateau et gestion des joueurs
-game.c → logique de partie et tournoi
-ui.c → interface console stylée et animations
-ai.c → intelligence artificielle (3 niveaux)
-save.c → sauvegarde et chargement de parties
-stats.c → statistiques avancées
-help.c → menu d’aide interactif
-utils.c → outils généraux (dates, fichiers, etc.)
+- main.c → menu principal et orchestration
+- board.c / player.c → plateau et gestion des joueurs
+- game.c → logique de partie et tournoi
+- ui.c → interface console stylée et animations
+- ai.c → intelligence artificielle (3 niveaux)
+- save.c → sauvegarde et chargement de parties
+- stats.c → statistiques avancées
+- help.c → menu d’aide interactif
+- utils.c → outils généraux (dates, fichiers, etc.)
 
 ## MENU PRINCIPAL (main.c)
-Options principales :
-Nouvelle partie
-Charger une partie (choisir parmi saves/)
-Re-visualiser une partie (replay)
-Tournoi (best of N)(Menu tournoi : “Best of N” (N odd, ex 3 ou 5).
+### Options principales :
+1. Nouvelle partie
+2. Charger une partie (choisir parmi saves/)
+3. Re-visualiser une partie (replay)
+4. Tournoi (best of N)(Menu tournoi : “Best of N” (N odd, ex 3 ou 5).
 Paramètres : joueur vs joueur, joueur vs IA (niveau choisi).
-Stocker résultats de chaque manche, afficher score courant.
+5. Stocker résultats de chaque manche, afficher score courant.
 À la fin, afficher trophée ASCII, update stats globales.)
 Statistiques
-Aide (interactive)(AIDE :
-1. Règles du jeu
-2. Commandes disponibles
-3. À propos
-4. Retour
+6. Aide (interactive)(AIDE :
+-  Règles du jeu
+- Commandes disponibles
+-  À propos
+-  Retour
 )
-Quitter
+7. Quitter
 Comportement :
 Boucle jusqu’à Quitter.
 Après chaque action, retour au menu.
 
 ## RAPPORT (docs/REPORT.pdf) — structure et contenu à fournir
-15 pages hors codes : suggestions précises pour sections.
-Page de garde (titre, noms, tuteur)
-Résumé (1/2 page)
-Introduction (objectif, contraintes BE)
-Analyse fonctionnelle (cas d’usage : joueur vs joueur, joueur vs IA, sauvegarde, replay, stats, tournoi)
-Architecture logicielle (diagramme modules, responsabilités)
-Détails modules (board, ai, save, stats, ui) avec pseudo-codes clés
-Algorithme IA (détails minimax, heuristiques, complexité)
-Formats de fichiers (exemples de save.txt, stats.txt)
-Tests réalisés & résultats (tableau des tests)
-Difficultés rencontrées & solutions
-Améliorations possibles (ex : GUI SDL, réseau, matchmaking)
-Conclusion
-Annexes (extraits de codes commentés, instructions compilation, README)
+### 15 pages hors codes : suggestions précises pour sections.
+1. Page de garde (titre, noms, tuteur)
+2. Résumé (1/2 page)
+3. Introduction (objectif, contraintes BE)
+4. Analyse fonctionnelle (cas d’usage : joueur vs joueur, joueur vs IA, sauvegarde, replay, stats, tournoi)
+5. Architecture logicielle (diagramme modules, responsabilités)
+6. Détails modules (board, ai, save, stats, ui) avec pseudo-codes clés
+7. Algorithme IA (détails minimax, heuristiques, complexité)
+8. Formats de fichiers (exemples de save.txt, stats.txt)
+9. Tests réalisés & résultats (tableau des tests)
+10. Difficultés rencontrées & solutions
+11. Améliorations possibles (ex : GUI SDL, réseau, matchmaking)
+12. Conclusion
+13. Annexes (extraits de codes commentés, instructions compilation, README)
 
 ## Répartition technique par dossier (alignée sur la structure officielle)
 Dans docs/Readme.txt
