@@ -1,0 +1,8 @@
+# Fichiers à ignorer
+build/
+*.exe
+*.o
+*.out
+*.log
+*.tmp
+.DS_Store
