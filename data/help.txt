@@ -1,0 +1,53 @@
+#############################################
+#              AIDE MORPION BE 2026         #
+#############################################
+
+Bienvenue dans le menu d’aide du jeu MORPION BE 2026 !
+Choisissez une catégorie pour obtenir plus d’informations.
+
+---------------------------------------------
+1. RÈGLES DU JEU
+---------------------------------------------
+Le morpion (ou Tic-Tac-Toe) est un jeu à deux joueurs.
+Le plateau est une grille de 3 x 3 cases.
+
+But :
+  - Aligner trois symboles identiques (X ou O)
+    horizontalement, verticalement ou en diagonale.
+  - Si toutes les cases sont remplies sans gagnant,
+    la partie est déclarée nulle.
+
+---------------------------------------------
+2. COMMANDES DISPONIBLES
+---------------------------------------------
+Dans le menu principal :
+  1 → Nouvelle partie
+  2 → Charger une partie enregistrée
+  3 → Revisualiser une partie (replay)
+  4 → Mode tournoi (best of N)
+  5 → Consulter les statistiques
+  6 → Accéder à l’aide interactive
+  7 → Quitter le jeu
+
+Pendant le jeu :
+  - Entrez la ligne (1 à 3) et la colonne (1 à 3) pour placer votre symbole.
+  - Tapez 'S' pour sauvegarder la partie.
+  - Tapez 'Q' pour quitter la partie en cours.
+
+---------------------------------------------
+3. À PROPOS
+---------------------------------------------
+Projet : MORPION BE INFO 2025–2026
+Encadrement : EIL Côte d’Opale (Calais)
+Développement : Akpo Akisch (chef de projet), Arsène, Jean-Yves
+Langage : C (Standard C11)
+Objectif : Respect du cahier des charges + fonctionnalités bonus :
+  - IA intelligente à 3 niveaux
+  - Sauvegarde multiple et reprise
+  - Statistiques avancées
+  - Design console stylé et narratif
+  - Mode tournoi (best of N)
+  - Replay des parties
+---------------------------------------------
+Merci d’utiliser notre jeu et bon divertissement !
+#############################################

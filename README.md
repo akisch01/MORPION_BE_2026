@@ -77,3 +77,20 @@ Dans docs/Readme.txt
 | **48**           |  IA niveau 1 & 2 + Sauvegarde                         | `ai.c`, `save.c`, `utils.c`, ajout au menu principal                         | Akisch + Arsène             |
 | **51**           |  Statistiques + Aide interactive + Replay             | `stats.c`, `help.c`, `game.c` (historique), `ui.c` (améliorations visuelles) | Akisch + Arsène + Jean-Yves |
 | **02 (Janvier)** |  IA niveau 3 (minimax) + Mode tournoi + Rapport final | `ai.c`, `game.c`, `docs/REPORT.pdf`, tests complets                          | Akisch + Jean-Yves          |
+
+
+---
+
+## ⚙️ Compilation & exécution
+
+### Sous **Linux / macOS**
+```bash
+cd src
+gcc *.c -o ../build/morpion -Wall -Wextra -std=c11
+../build/morpion
+
+### Sous **Windows (PowerShell / CMD)**
+```bash
+cd src
+gcc *.c -o ../build/morpion.exe -Wall -Wextra -std=c11
+../build/morpion.exe

@@ -1,0 +1,32 @@
+#############################################
+#          STATISTIQUES MORPION BE 2026     #
+#############################################
+
+# Dernière mise à jour : aucune (première exécution)
+# Ce fichier est géré automatiquement par le programme.
+
+# Légende :
+# - Parties totales  : nombre total de parties jouées
+# - Victoires J1/J2  : nombre de victoires par joueur
+# - Victoires IA     : nombre de victoires de l’ordinateur
+# - Matchs nuls      : nombre de parties terminées sans vainqueur
+# - Durée moyenne    : durée moyenne des parties (en secondes)
+# - Joueur le plus actif : celui ayant joué le plus de parties
+# - Taux de victoire : pourcentage de victoires par joueur
+
+---------------------------------------------
+Parties totales        : 0
+Victoires Joueur 1     : 0
+Victoires Joueur 2     : 0
+Victoires IA           : 0
+Matchs nuls            : 0
+Durée moyenne (sec)    : 0
+Joueur le plus actif   : N/A
+Taux victoire J1 (%)   : 0.0
+Taux victoire J2 (%)   : 0.0
+---------------------------------------------
+
+# Historique des parties :
+# Date          | Joueur 1    | Joueur 2 / IA | Gagnant | Durée (sec)
+# -------------------------------------------------------------------
+# (vide)
