@@ -11,7 +11,7 @@
 #include "ui.h"
 #include "stats.h"
 
-// 📊 Affiche les statistiques actuelles depuis stats.txt
+// Affiche les statistiques actuelles depuis stats.txt
 void afficher_statistiques() {
     FILE *fichier = fopen("../data/stats.txt", "r");
     if (!fichier) {

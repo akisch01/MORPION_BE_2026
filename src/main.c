@@ -45,7 +45,7 @@ int main(void) {
                 do {
                     printf("\nVoulez-vous vraiment quitter ? (o/n) : ");
                     scanf(" %c", &confirmation);
-                    while (getchar() != '\n'); // vider le buffer
+                    while (getchar() != '\n'); 
 
                     if (confirmation == 'o' || confirmation == 'O') {
                         effacer_ecran();

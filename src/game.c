@@ -30,16 +30,16 @@ void lancer_tournoi(void) {
 
 
 void action_charger_partie() {
-    charger_partie();   //  appel vers save.c
+    charger_partie();   
     attendre_entree();
 }
 
 void action_afficher_aide() {
-    afficher_aide();    //  appel vers help.c
+    afficher_aide();    
     attendre_entree();
 }
 
 void action_statistiques() {
-    afficher_statistiques(); //  appel vers stats.c
+    afficher_statistiques();
     attendre_entree();
 }
