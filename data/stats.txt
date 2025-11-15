@@ -30,3 +30,8 @@ Taux victoire J2 (%)   : 0.0
 # Date          | Joueur 1    | Joueur 2 / IA | Gagnant | Durée (sec)
 # -------------------------------------------------------------------
 # (vide)
+
+yvesco a gagné le 15/11/2025 13:57
+Yes a gagné le 15/11/2025 14:39
+uriel a gagné le 15/11/2025 14:50
+

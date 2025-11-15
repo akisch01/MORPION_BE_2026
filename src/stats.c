@@ -8,6 +8,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
 #include "ui.h"
 #include "stats.h"
 
@@ -15,7 +16,7 @@
 void afficher_statistiques() {
     FILE *fichier = fopen("../data/stats.txt", "r");
     if (!fichier) {
-        printf("⚠️  Impossible de charger le fichier de statistiques (stats.txt).\n");
+        printf("Impossible de charger le fichier de statistiques (stats.txt).\n");
         attendre_entree();
         return;
     }
@@ -43,8 +44,23 @@ void afficher_statistiques() {
     attendre_entree();
 }
 
-// Fonction à implémenter plus tard : mise à jour automatique après chaque partie
+// Mise à jour automatique après chaque partie
+// Par Jean-Yves
 void mettre_a_jour_statistiques(const char *joueur_gagnant, int duree) {
-    // TODO : Lire stats.txt, modifier les valeurs correspondantes, et sauvegarder à nouveau
-    // Exemple : incrémenter les parties, mettre à jour le gagnant, recalculer la durée moyenne
+    (void)duree;
+    if (!joueur_gagnant) return;
+
+    FILE *f = fopen("../data/stats.txt", "a");
+    if (!f) {
+        printf("Impossible d'ouvrir stats.txt pour écriture.\n");
+        return;
+    }
+
+    time_t t = time(NULL);
+    struct tm *tm_info = localtime(&t);
+    char date_str[64];
+    strftime(date_str, sizeof(date_str), "%d/%m/%Y %H:%M", tm_info);
+
+    fprintf(f, "\n%s a gagné le %s", joueur_gagnant, date_str);
+    fclose(f);
 }

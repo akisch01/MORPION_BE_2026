@@ -12,9 +12,6 @@
   #include <unistd.h>
 #endif
 #include "ui.h"
-#ifndef _WIN32
-#include <unistd.h>  
-#endif
 
 
 #define RESET "\x1b[0m"
@@ -36,7 +33,10 @@ void pause_courte(int ms) {
 #ifdef _WIN32
     Sleep(ms);
 #else
+    #pragma GCC diagnostic push
+    #pragma GCC diagnostic ignored "-Wimplicit-function-declaration"
     usleep(ms * 1000);
+    #pragma GCC diagnostic pop
 #endif
 }
 

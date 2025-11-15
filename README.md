@@ -78,7 +78,6 @@ Dans docs/Readme.txt
 | **51**           |  Statistiques + Aide interactive + Replay             | `stats.c`, `help.c`, `game.c` (historique), `ui.c` (améliorations visuelles) | Akisch + Arsène + Jean-Yves |
 | **02 (Janvier)** |  IA niveau 3 (minimax) + Mode tournoi + Rapport final | `ai.c`, `game.c`, `docs/REPORT.pdf`, tests complets                          | Akisch + Jean-Yves          |
 
-
 ---
 
 ## ⚙️ Compilation & exécution

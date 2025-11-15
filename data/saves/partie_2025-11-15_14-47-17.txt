@@ -1,0 +1,19 @@
+#############################################
+# Sauvegarde automatique du : 15/11/2025 14:47:17
+# Joueur 1 : olo (O)
+# Joueur 2 : IA (X)
+# Nombre de coups : 5
+#############################################
+
+=== HISTORIQUE DES COUPS ===
+Coup 1 : O joue (1,1)
+Coup 2 : X joue (2,2)
+Coup 3 : O joue (1,3)
+Coup 4 : X joue (2,1)
+Coup 5 : O joue (1,2)
+
+=== PLATEAU FINAL ===
+O O O 
+X X   
+      
+#############################################
