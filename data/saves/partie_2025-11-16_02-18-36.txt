@@ -1,0 +1,24 @@
+#############################################
+# Sauvegarde automatique du : 16/11/2025 02:18:36
+# Joueur 1 : yas (O)
+# Joueur 2 : IA (X)
+# Nombre de coups : 9
+# État : MATCH_NUL
+#############################################
+
+=== HISTORIQUE DES COUPS ===
+Coup 1 : O joue (3,3)
+Coup 2 : X joue (2,2)
+Coup 3 : O joue (2,3)
+Coup 4 : X joue (1,3)
+Coup 5 : O joue (3,1)
+Coup 6 : X joue (3,2)
+Coup 7 : O joue (1,2)
+Coup 8 : X joue (1,1)
+Coup 9 : O joue (2,1)
+
+=== PLATEAU FINAL ===
+X O X 
+O X O 
+O X O 
+#############################################

@@ -1,0 +1,15 @@
+#############################################
+# Sauvegarde automatique du : 17/11/2025 00:49:29
+# Joueur 1 : Alice (X)
+# Joueur 2 : Bob (O)
+# Nombre de coups : 0
+# État : EN_COURS
+#############################################
+
+=== HISTORIQUE DES COUPS ===
+
+=== PLATEAU FINAL ===
+      
+      
+      
+#############################################

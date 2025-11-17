@@ -77,6 +77,7 @@ void nouvelle_partie(void) {
     int tour = 1;
     int ligne, colonne;
     int coup_count = 0;
+    int quitter = 0;
     Coup coups[MAX_COUPS];
     memset(coups, 0, sizeof(coups));
 
@@ -104,14 +105,29 @@ void nouvelle_partie(void) {
         } else {
             // Joueur humain
             int ok = 0;
+            char input[64];
             do {
-                printf("Entrez la ligne (1-3) et la colonne (1-3), séparées par un espace : ");
-                if (scanf("%d %d", &ligne, &colonne) != 2) {
-                    while (getchar() != '\n');
+                printf("Entrez la ligne (1-3) et la colonne (1-3), séparées par un espace (ou Q pour quitter) : ");
+                if (!fgets(input, sizeof(input), stdin)) {
                     printf("Entrée invalide. Réessayez.\n");
                     continue;
                 }
-                while (getchar() != '\n');
+                if (input[0] == 'Q' || input[0] == 'q') {
+                    printf("Voulez-vous enregistrer la partie en cours avant de quitter ? (O/N) : ");
+                    if (!fgets(input, sizeof(input), stdin)) break;
+                    if (input[0] == 'O' || input[0] == 'o') {
+                        sauvegarder_partie(j1.nom, j2.nom, j1.symbole, j2.symbole,
+                                           coup_count, coups, &plateau, "EN_COURS", NULL);
+                    }
+                    quitter = 1;
+                    break;
+                }
+
+                if (sscanf(input, "%d %d", &ligne, &colonne) != 2) {
+                    printf("Entrée invalide. Réessayez.\n");
+                    continue;
+                }
+
                 if (jouer_coup(&plateau, ligne - 1, colonne - 1, courant->symbole)) {
                     ok = 1;
                     // Enregistrer le coup
@@ -124,7 +140,9 @@ void nouvelle_partie(void) {
                 } else {
                     printf("Coup invalide. Case occupée ou hors limite.\n");
                 }
-            } while (!ok);
+            } while (!ok && !quitter);
+
+            if (quitter) break;
         }
 
         // Vérifier victoire
@@ -133,7 +151,9 @@ void nouvelle_partie(void) {
             afficher_plateau(&plateau);
             printf("\n%s (%c) a gagné !\n", courant->nom, courant->symbole);
             mettre_a_jour_statistiques(courant->nom, 0);
-            sauvegarder_partie(j1.nom, j2.nom, j1.symbole, j2.symbole, coup_count, coups, &plateau);
+            // Déterminer l'état de victoire
+            const char *etat_victoire = (courant == &j1) ? "VICTOIRE_J1" : "VICTOIRE_J2";
+            sauvegarder_partie(j1.nom, j2.nom, j1.symbole, j2.symbole, coup_count, coups, &plateau, etat_victoire, NULL);
             break;
         }
 
@@ -143,7 +163,7 @@ void nouvelle_partie(void) {
             afficher_plateau(&plateau);
             printf("\nMatch nul !\n");
             mettre_a_jour_statistiques("Match nul", 0);
-            sauvegarder_partie(j1.nom, j2.nom, j1.symbole, j2.symbole, coup_count, coups, &plateau);
+            sauvegarder_partie(j1.nom, j2.nom, j1.symbole, j2.symbole, coup_count, coups, &plateau, "MATCH_NUL", NULL);
             break;
         }
 
@@ -321,6 +341,8 @@ void revisualiser_partie(void) {
     attendre_entree();
 }
 
+// (reprise function removed)
+
 void lancer_tournoi(void) {
     printf("[TODO] Mode tournoi (best of N) entre joueurs/IA.\n");
     attendre_entree();
@@ -328,7 +350,7 @@ void lancer_tournoi(void) {
 
 
 void action_charger_partie() {
-    charger_partie();   
+    charger_partie();
     attendre_entree();
 }
 
