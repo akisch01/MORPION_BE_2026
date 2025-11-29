@@ -1,15 +1,19 @@
 #############################################
-# Sauvegarde automatique du : 17/11/2025 00:49:29
-# Joueur 1 : Alice (X)
-# Joueur 2 : Bob (O)
-# Nombre de coups : 0
+# Sauvegarde automatique du : 23/11/2025 23:30:00
+# Joueur 1 : Yoyo (O)
+# Joueur 2 : IA (X)
+# Nombre de coups : 4
 # État : EN_COURS
 #############################################
 
 === HISTORIQUE DES COUPS ===
+Coup 1 : O joue (1,2)
+Coup 2 : X joue (2,2)
+Coup 3 : O joue (1,1)
+Coup 4 : X joue (2,1)
 
 === PLATEAU FINAL ===
-      
-      
+O   O 
+X   X 
       
 #############################################

@@ -29,9 +29,11 @@ typedef struct {
     Coup coups[MAX_COUPS];       /* Historique des coups */
     Plateau plateau;              /* État final du plateau */
     char etat[20];               /* État de la partie : EN_COURS, VICTOIRE, MATCH_NUL */
+    char nom_fichier[256];       /* Nom du fichier de sauvegarde (basename) */
 } Partie;
 
 void charger_partie();
+int load_partie_from_file(const char *chemin, Partie *out);
 /*
  * Sauvegarde une partie.
  * - si `nom_fichier_cible` == NULL : crée un fichier horodaté dans ../data/saves/

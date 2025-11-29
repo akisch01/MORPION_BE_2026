@@ -112,33 +112,21 @@ void charger_partie() {
     // Charger la partie sélectionnée
     char chemin_complet[512];
     snprintf(chemin_complet, sizeof(chemin_complet), "%s%s", DOSSIER_SAVES, fichiers_en_cours[choix - 1]);
-    FILE *f = fopen(chemin_complet, "r");
-    if (!f) {
-        printf("Erreur d'ouverture du fichier : %s\n", chemin_complet);
-        attendre_entree();
-        return;
-    }
-
     Partie partie;
     memset(&partie, 0, sizeof(Partie));
 
-    char ligne[256];
-    while (fgets(ligne, sizeof(ligne), f)) {
-        if (strstr(ligne, "# Joueur 1 :")) {
-            sscanf(ligne, "# Joueur 1 : %[^ (] (%c)", partie.joueur1, &partie.symboleJ1);
-        } else if (strstr(ligne, "# Joueur 2 :")) {
-            sscanf(ligne, "# Joueur 2 : %[^ (] (%c)", partie.joueur2, &partie.symboleJ2);
-        } else if (strstr(ligne, "# Nombre de coups :")) {
-            sscanf(ligne, "# Nombre de coups : %d", &partie.nb_coups);
-        } else if (strstr(ligne, "# État :")) {
-            sscanf(ligne, "# État : %s", partie.etat);
-        }
+    if (load_partie_from_file(chemin_complet, &partie) != 0) {
+        printf("Erreur lors du chargement de la sauvegarde.\n");
+        attendre_entree();
+        return;
     }
-    fclose(f);
+    // Store basename
+    strncpy(partie.nom_fichier, fichiers_en_cours[choix - 1], sizeof(partie.nom_fichier)-1);
+    partie.nom_fichier[sizeof(partie.nom_fichier)-1] = '\0';
 
     // Afficher le résumé
     effacer_ecran();
-    printf("\nPartie chargée depuis : %s\n", fichiers_en_cours[choix - 1]);
+    printf("\nPartie chargée depuis : %s\n", partie.nom_fichier);
     afficher_resume_partie(&partie);
     
     // Menu : Continuer ou Supprimer
@@ -156,9 +144,9 @@ void charger_partie() {
         while (getchar() != '\n');
 
         if (action == 1) {
-            // TODO : Continuer la partie
-            printf("\n[TODO] Reprendre la partie en cours...\n");
-            attendre_entree();
+            // Continuer la partie : appeler la reprise dans game.c
+            extern void nouvelle_partie_reprise(const Partie *p);
+            nouvelle_partie_reprise(&partie);
             break;
         } else if (action == 2) {
             // Supprimer la partie
@@ -193,6 +181,76 @@ void afficher_resume_partie(const Partie *p) {
         printf("État : %s\n", p->etat);
     }
     printf("\nAppuyez sur Entrée pour continuer...\n");
+}
+
+// Lit une sauvegarde complète et remplit la struct Partie (coups + plateau)
+int load_partie_from_file(const char *chemin, Partie *out) {
+    if (!chemin || !out) return -1;
+    FILE *f = fopen(chemin, "r");
+    if (!f) return -1;
+
+    memset(out, 0, sizeof(Partie));
+    char ligne[256];
+    int in_historique = 0, in_plateau = 0;
+    int parsed_coups = 0;
+    int plateau_row = 0;
+
+    while (fgets(ligne, sizeof(ligne), f)) {
+        if (strstr(ligne, "# Joueur 1 :")) {
+            sscanf(ligne, "# Joueur 1 : %[^ (] (%c)", out->joueur1, &out->symboleJ1);
+            continue;
+        } else if (strstr(ligne, "# Joueur 2 :")) {
+            sscanf(ligne, "# Joueur 2 : %[^ (] (%c)", out->joueur2, &out->symboleJ2);
+            continue;
+        } else if (strstr(ligne, "# Nombre de coups :")) {
+            sscanf(ligne, "# Nombre de coups : %d", &out->nb_coups);
+            continue;
+        } else if (strstr(ligne, "# État :")) {
+            char val[64] = {0};
+            char *p = strchr(ligne, ':');
+            if (p) {
+                p++; while (*p == ' ') p++;
+                char *nl = strchr(p, '\n'); if (nl) *nl = '\0';
+                strncpy(out->etat, p, sizeof(out->etat)-1);
+            }
+            continue;
+        } else if (strstr(ligne, "=== HISTORIQUE DES COUPS ===")) {
+            in_historique = 1; in_plateau = 0; continue;
+        } else if (strstr(ligne, "=== PLATEAU FINAL ===")) {
+            in_historique = 0; in_plateau = 1; plateau_row = 0; continue;
+        }
+
+        if (in_historique && strstr(ligne, "Coup")) {
+            int coup_num, lig, col; char joueur;
+            if (sscanf(ligne, "Coup %d : %c joue (%d,%d)", &coup_num, &joueur, &lig, &col) == 4) {
+                if (parsed_coups < MAX_COUPS) {
+                    out->coups[parsed_coups].ligne = lig - 1;
+                    out->coups[parsed_coups].colonne = col - 1;
+                    out->coups[parsed_coups].joueur = joueur;
+                    parsed_coups++;
+                }
+            }
+            continue;
+        }
+
+        if (in_plateau && ligne[0] != '#' && ligne[0] != '\n' && ligne[0] != '=') {
+            int col_count = 0;
+            for (int i = 0; i < (int)strlen(ligne) && col_count < 3; ++i) {
+                if (ligne[i] != ' ' && ligne[i] != '|' && ligne[i] != '-' && ligne[i] != '\n') {
+                    out->plateau.cases[plateau_row][col_count++] = ligne[i];
+                }
+            }
+            if (col_count > 0) plateau_row++;
+            continue;
+        }
+        
+        
+    }
+
+    fclose(f);
+    // finalise le nombre de coups parsés si l'en-tête était absent ou incohérent
+    if (out->nb_coups <= 0) out->nb_coups = parsed_coups;
+    return 0;
 }
 
 // SAUVEGARDE D'UNE PARTIE AVEC HISTORIQUE

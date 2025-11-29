@@ -297,6 +297,7 @@ void revisualiser_partie(void) {
             if (plateau_row >= 3) plateau_row = 0;
             continue;
         }
+        
     }
     fclose(f);
 
@@ -345,6 +346,87 @@ void revisualiser_partie(void) {
 
 void lancer_tournoi(void) {
     printf("[TODO] Mode tournoi (best of N) entre joueurs/IA.\n");
+    attendre_entree();
+}
+
+// Reprendre une partie existante (Partie remplie par load_partie_from_file)
+// Par Jean-Yves
+void nouvelle_partie_reprise(const Partie *p) {
+    if (!p) return;
+    Plateau plateau = p->plateau;
+    Joueur j1, j2;
+    initialiser_joueur(&j1, p->joueur1, p->symboleJ1, 0);
+    // Détecte si joueur2 est une IA par nom 'IA'
+    int j2_is_ia = (strcmp(p->joueur2, "IA") == 0) ? 1 : 0;
+    initialiser_joueur(&j2, p->joueur2, p->symboleJ2, j2_is_ia);
+
+    Coup coups[MAX_COUPS];
+    int coup_count = 0;
+    for (int i = 0; i < p->nb_coups && i < MAX_COUPS; ++i) coups[coup_count++] = p->coups[i];
+
+    Joueur *courant = (coup_count % 2 == 0) ? &j1 : &j2;
+    int tour = coup_count + 1;
+    int quitter = 0;
+    int ia_level = 1; // default if IA
+
+    while (1) {
+        effacer_ecran();
+        printf("Tour %d\n", tour);
+        afficher_joueur(courant);
+        afficher_plateau(&plateau);
+
+        if (courant->est_IA) {
+            int il = -1, ic = -1;
+            ia_jouer_coup(ia_level, &plateau, &il, &ic);
+            if (il >= 0 && ic >= 0) {
+                jouer_coup(&plateau, il, ic, courant->symbole);
+                if (coup_count < MAX_COUPS) { coups[coup_count].ligne = il; coups[coup_count].colonne = ic; coups[coup_count].joueur = courant->symbole; coup_count++; }
+            }
+            printf("IA joue...\n"); pause_courte(600);
+        } else {
+            char input[64]; int ligne, colonne; int ok = 0;
+            do {
+                printf("Entrez la ligne (1-3) et la colonne (1-3), séparées par un espace (ou Q pour quitter) : ");
+                if (!fgets(input, sizeof(input), stdin)) { printf("Entrée invalide. Réessayez.\n"); continue; }
+                if (input[0] == 'Q' || input[0] == 'q') {
+                    printf("Voulez-vous enregistrer la partie en cours avant de quitter ? (O/N) : ");
+                    if (!fgets(input, sizeof(input), stdin)) break;
+                    if (input[0] == 'O' || input[0] == 'o') {
+                        // écrase la sauvegarde existante
+                        sauvegarder_partie(j1.nom, j2.nom, j1.symbole, j2.symbole, coup_count, coups, &plateau, "EN_COURS", p->nom_fichier);
+                    }
+                    quitter = 1; break;
+                }
+                if (sscanf(input, "%d %d", &ligne, &colonne) != 2) { printf("Entrée invalide. Réessayez.\n"); continue; }
+                if (jouer_coup(&plateau, ligne - 1, colonne - 1, courant->symbole)) {
+                    ok = 1; if (coup_count < MAX_COUPS) { coups[coup_count].ligne = ligne-1; coups[coup_count].colonne = colonne-1; coups[coup_count].joueur = courant->symbole; coup_count++; }
+                } else { printf("Coup invalide. Case occupée ou hors limite.\n"); }
+            } while (!ok && !quitter);
+            if (quitter) break;
+        }
+
+        // Vérifier victoire
+        if (verifier_victoire(&plateau, courant->symbole)) {
+            effacer_ecran(); afficher_plateau(&plateau);
+            printf("\n%s (%c) a gagné !\n", courant->nom, courant->symbole);
+            mettre_a_jour_statistiques(courant->nom, 0);
+            const char *etat_victoire = (courant == &j1) ? "VICTOIRE_J1" : "VICTOIRE_J2";
+            sauvegarder_partie(j1.nom, j2.nom, j1.symbole, j2.symbole, coup_count, coups, &plateau, etat_victoire, p->nom_fichier);
+            break;
+        }
+
+        if (verifier_match_nul(&plateau)) {
+            effacer_ecran(); afficher_plateau(&plateau);
+            printf("\nMatch nul !\n"); mettre_a_jour_statistiques("Match nul", 0);
+            sauvegarder_partie(j1.nom, j2.nom, j1.symbole, j2.symbole, coup_count, coups, &plateau, "MATCH_NUL", p->nom_fichier);
+            break;
+        }
+
+        courant = (courant == &j1) ? &j2 : &j1;
+        tour++;
+    }
+
+    printf("\nFin de la partie reprise. Appuyez sur Entrée pour revenir au menu.\n");
     attendre_entree();
 }
 
