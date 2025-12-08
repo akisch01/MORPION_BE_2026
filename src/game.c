@@ -1,6 +1,6 @@
 /*
  * Fichier : game.c
- * Auteur  : Akpo Akisch
+ * Auteur  : Akpo Akisch / Jean-Yves
  * Description : Orchestration du jeu et liens entre modules
  */
 
@@ -160,7 +160,7 @@ void nouvelle_partie(void) {
     int ia_level_j2 = -1;
 
     effacer_ecran();
-    printf("=== NOUVELLE PARTIE ===\n\n");
+    printf("  NOUVELLE PARTIE  \n\n");
 
     // Joueur 1
     printf("Entrez le nom du Joueur 1 (laissez vide pour 'Joueur1') : ");
@@ -190,7 +190,7 @@ void nouvelle_partie(void) {
 
     if (rep == 'o') {
         // Choix du niveau d'IA
-        printf("Choisissez le niveau de l'IA (1-Facile, 2-Normal, 3-Difficile) [1] : ");
+        printf("Choisissez le niveau de l'IA \n1-Facile \n2-Normal \n3-Difficile \n[1] : ");
         char buffer_level[16];
         lire_entree_utilisateur(buffer_level, sizeof(buffer_level));
         if (sscanf(buffer_level, "%d", &ia_level_j2) != 1 || ia_level_j2 < 1 || ia_level_j2 > 3) {
@@ -218,8 +218,7 @@ void revisualiser_partie(void) {
     Partie partie;
     memset(&partie, 0, sizeof(Partie));
 
-    char saves_path[PATH_MAX];
-    obtenir_chemin_saves(saves_path, sizeof(saves_path));
+    const char *saves_path = obtenir_chemin_saves();
     DIR *dir = opendir(saves_path);
     if (!dir) {
         printf("Impossible d'accéder au dossier des sauvegardes (%s).\n", saves_path);
@@ -228,11 +227,11 @@ void revisualiser_partie(void) {
     }
 
     struct dirent *entry;
-    char fichiers[50][256];
+    char fichiers[50][MAX_SAVE_FILENAME_LEN];
     int nb_saves = 0;
 
     effacer_ecran();
-    printf("\n=== REVOIR UNE PARTIE ARCHIVÉE ===\n\n");
+    printf("\n  REVOIR UNE PARTIE ARCHIVÉE  \n\n");
 
     while ((entry = readdir(dir)) != NULL) {
         if (strcmp(entry->d_name, ".") == 0 || strcmp(entry->d_name, "..") == 0)
@@ -269,11 +268,6 @@ void revisualiser_partie(void) {
     }
 
     char chemin_complet[PATH_MAX];
-    if (strlen(saves_path) + strlen(fichiers[choix - 1]) + 1 > PATH_MAX) {
-        printf("Erreur: Le chemin du fichier de sauvegarde est trop long.\n");
-        attendre_entree();
-        return;
-    }
     snprintf(chemin_complet, sizeof(chemin_complet), "%s%s", saves_path, fichiers[choix - 1]);
     FILE *f = fopen(chemin_complet, "r");
     if (!f) {
@@ -296,7 +290,7 @@ void revisualiser_partie(void) {
             sscanf(ligne, "# Joueur 1 : %[^ (] (%c)", joueur1, &symboleJ1);
         } else if (strstr(ligne, "# Joueur 2 :")) {
             sscanf(ligne, "# Joueur 2 : %[^ (] (%c)", joueur2, &symboleJ2);
-        } else if (strstr(ligne, "=== HISTORIQUE DES COUPS ===")) {
+        } else if (strstr(ligne, "  HISTORIQUE DES COUPS  ")) {
             in_historique = 1;
         } else if (in_historique && strstr(ligne, "Coup")) {
             int coup_num, lig, col;
@@ -319,7 +313,7 @@ void revisualiser_partie(void) {
     int nb_coups = parsed_coups;
 
     effacer_ecran();
-    printf("=== REPLAY : %s ===\n\n", fichiers[choix - 1]);
+    printf("  REPLAY : %s  \n\n", fichiers[choix - 1]);
     printf("Joueur 1 : %s (%c)  |  Joueur 2 : %s (%c)\n", joueur1, symboleJ1, joueur2, symboleJ2);
     
     Plateau replay_board;
@@ -340,7 +334,7 @@ void revisualiser_partie(void) {
     
     for (int i = 0; i < nb_coups; i++) {
         effacer_ecran();
-        printf("=== REPLAY : %s ===\n\n", fichiers[choix - 1]);
+        printf("  REPLAY : %s  \n\n", fichiers[choix - 1]);
         printf("Joueur 1 : %s (%c)  |  Joueur 2 : %s (%c)\n", joueur1, symboleJ1, joueur2, symboleJ2);
         printf("\nCoup %d/%d : Le joueur '%c' joue en (%d,%d)\n\n", i + 1, nb_coups, coups[i].joueur, 
                coups[i].ligne + 1, coups[i].colonne + 1);
@@ -359,7 +353,7 @@ void revisualiser_partie(void) {
     }
     
     effacer_ecran();
-    printf("=== REPLAY TERMINÉ ===\n\n");
+    printf("  REPLAY TERMINÉ  \n\n");
     printf("Plateau final de la partie :\n");
     afficher_plateau(&replay_board);
     printf("\nAppuyez sur Entrée pour revenir au menu.\n");
@@ -367,10 +361,11 @@ void revisualiser_partie(void) {
 }
 
 // (reprise function removed)
+// Par akisch
 
 void lancer_tournoi(void) {
     effacer_ecran();
-    printf("=== MODE TOURNOI (AU MEILLEUR DES N MANCHES) ===\n\n");
+    printf("  MODE TOURNOI (AU MEILLEUR DES N MANCHES)  \n\n");
 
     int nb_parties = 0;
     char buffer_nb_parties[16];
@@ -398,7 +393,7 @@ void lancer_tournoi(void) {
     lire_entree_utilisateur(buffer_ia1, sizeof(buffer_ia1));
     if (buffer_ia1[0] == 'o' || buffer_ia1[0] == 'O') {
         mode_ia_j1 = 1;
-        printf("Niveau de l'IA pour Joueur 1 (1-Facile, 2-Normal, 3-Difficile) [1] : ");
+        printf("Niveau de l'IA pour Joueur 1 \n1-Facile \n2-Normal \n3-Difficile \n[1] : ");
         char buffer_level1[16];
         lire_entree_utilisateur(buffer_level1, sizeof(buffer_level1));
         if (sscanf(buffer_level1, "%d", &ia_level_j1) != 1 || ia_level_j1 < 1 || ia_level_j1 > 3) {
@@ -419,7 +414,7 @@ void lancer_tournoi(void) {
     lire_entree_utilisateur(buffer_ia2, sizeof(buffer_ia2));
     if (buffer_ia2[0] == 'o' || buffer_ia2[0] == 'O') {
         mode_ia_j2 = 1;
-        printf("Niveau de l'IA pour Joueur 2 (1-Facile, 2-Normal, 3-Difficile) [1] : ");
+        printf("Niveau de l'IA pour Joueur 2 \n1-Facile \n2-Normal \n3-Difficile \n[1] : ");
         char buffer_level2[16];
         lire_entree_utilisateur(buffer_level2, sizeof(buffer_level2));
         if (sscanf(buffer_level2, "%d", &ia_level_j2) != 1 || ia_level_j2 < 1 || ia_level_j2 > 3) {
@@ -436,7 +431,7 @@ void lancer_tournoi(void) {
     int score_j1 = 0;
     int score_j2 = 0;
 
-    printf("\n\n=== LE TOURNOI COMMENCE ! ===\n");
+    printf("\n\n  LE TOURNOI COMMENCE !  \n");
     pause_courte(1500);
 
     for (int i = 1; i <= nb_parties; ++i) {
@@ -470,7 +465,7 @@ void lancer_tournoi(void) {
     }
 
     effacer_ecran();
-    printf("=== RÉSULTATS FINAUX DU TOURNOI ===\n");
+    printf("  RÉSULTATS FINAUX DU TOURNOI  \n");
     printf("Score final : %s %d - %d %s\n\n", j1.nom, score_j1, score_j2, j2.nom);
 
     char gagnant_tournoi[50] = "";

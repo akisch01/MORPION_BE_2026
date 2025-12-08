@@ -1,6 +1,6 @@
 /*
  * Fichier : utils.c
- * Auteur  : Équipe du projet
+ * Auteur  : Arsene
  * Date    : Décembre 2025
  * Description : Fonctions utilitaires générales pour le projet, telles que 
  *               la gestion des dates, des chemins de fichiers et des entrées 
@@ -23,8 +23,8 @@ void obtenir_date_actuelle(char *buffer, int taille) {
     strftime(buffer, taille, "%d/%m/%Y %H:%M", tm_info);
 }
 
-void obtenir_chemin_saves(char *path, size_t size) {
-    snprintf(path, size, "data/saves/");
+const char *obtenir_chemin_saves() {
+    return "data/saves/";
 }
 
 int lire_entree_utilisateur(char *buffer, size_t taille) {

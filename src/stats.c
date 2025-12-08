@@ -1,3 +1,10 @@
+/*
+ * Fichier : stats.h
+ * Auteur  : Akpo Akisch
+ * Date    : Decembre 2025
+ * Description : Gestion et affichage des statistiques de jeu.
+ */
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>

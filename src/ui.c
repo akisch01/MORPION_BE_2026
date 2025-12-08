@@ -1,6 +1,6 @@
 /*
  * Fichier : ui.c
- * Auteur  : Akpo Akisch
+ * Auteur  : Arsene
  * Description : Gestion de l'affichage console, couleurs et animations
  */
 

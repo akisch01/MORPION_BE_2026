@@ -1,6 +1,6 @@
 // Fichier : ai.c
 // Auteur  : Akpo Akisch
-// Date    : Novembre 2025
+// Date    : Decembre 2025
 // Description : Implémentation des différents niveaux d'intelligence artificielle pour le jeu de Morpion.
 //
 //               Niveau 1: L'IA joue un coup complètement aléatoire sur une case libre.
@@ -12,8 +12,6 @@
 //                         5. Jouer un coup aléatoire.
 //               Niveau 3: L'IA utilise l'algorithme Minimax pour trouver le coup optimal,
 //                         la rendant imbattable.
-//
-//*************************************************************************************************
 
 #include "ai.h"
 #include <stdlib.h>
@@ -104,9 +102,7 @@ void ia_jouer_coup(int niveau, const Plateau *p, int *ligne, int *colonne) {
     char ai_sym = deduire_symbole_courant(p);
     char human_sym = (ai_sym == 'X') ? 'O' : 'X';
 
-    // ==================
-    // === NIVEAU 1 : Aléatoire
-    // ==================
+    //NIVEAU 1 : Aléatoire
     if (niveau <= 1) {
         // Choisit une case libre au hasard.
         int idx = rand() % free_count;
@@ -115,9 +111,7 @@ void ia_jouer_coup(int niveau, const Plateau *p, int *ligne, int *colonne) {
         return;
     }
 
-    // ==================
-    // === NIVEAU 2 : Heuristique simple
-    // ==================
+    //NIVEAU 2 : Heuristique simple
     if (niveau == 2) {
         // 1. Cherche un coup gagnant.
         for (int k = 0; k < free_count; ++k) {
@@ -153,9 +147,8 @@ void ia_jouer_coup(int niveau, const Plateau *p, int *ligne, int *colonne) {
         return;
     }
 
-    // ==================
-    // === NIVEAU 3 : Minimax (imbattable)
-    // ==================
+
+    // NIVEAU 3 : Minimax (imbattable)
     if (niveau >= 3) {
         int bestVal = INT_MIN;
         int bestR = frees[0][0], bestC = frees[0][1];

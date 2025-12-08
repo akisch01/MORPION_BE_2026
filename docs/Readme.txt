@@ -17,7 +17,6 @@ Structure du projet
 │
 ├── data/
 │   ├── saves/           // contient partie1.txt, partie2.txt, ...
-│   ├── replays/         // history files for replay (json-like or simple)
 │   ├── stats.txt
 │   ├── help.txt
 │
@@ -47,7 +46,6 @@ Répartition technique par dossier (alignée sur la structure officielle)
 ├── data/
 │   ├── saves/               → (Arsène)
 │   ├── replays/             → (Jean-Yves)
-│   ├── stats.txt            → (Akisch)
 │   ├── help.txt             → (Arsène)
 │
 ├── build/

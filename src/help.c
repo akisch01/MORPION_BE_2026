@@ -1,3 +1,10 @@
+/*
+ * Fichier : help.c
+ * Auteur  : Akisch
+ * Date    : Octobre 2025
+ * Description : Déclarations liées à l’aide interactive du jeu Morpion.
+ */
+
 #include <stdio.h>
 #include <string.h>
 #include "ui.h"
@@ -8,13 +15,13 @@
 void afficher_section_aide(const char *section_tag) {
     FILE *fichier = fopen("data/help.txt", "r");
     if (!fichier) {
-        printf("⚠️  Impossible de charger le fichier d’aide (help.txt).\n");
+        printf("Impossible de charger le fichier d’aide (help.txt).\n");
         attendre_entree();
         return;
     }
 
     effacer_ecran();
-    printf("\n\033[1;33m=== %s ===\033[0m\n\n", section_tag + 1); // Affiche le titre de la section
+    printf("\n\033[1;33m  %s  \033[0m\n\n", section_tag + 1); // Affiche le titre de la section
 
     char ligne[256];
     int in_section = 0;
@@ -43,7 +50,7 @@ void afficher_aide() {
     int quitter = 0;
     while (!quitter) {
         effacer_ecran();
-        printf("\n=== AIDE INTERACTIVE ===\n\n");
+        printf("\n  AIDE INTERACTIVE  \n\n");
         printf("1. Règles du jeu\n");
         printf("2. Commandes disponibles\n");
         printf("3. À propos\n");

@@ -1,6 +1,6 @@
 /*
  * Fichier : save.c
- * Auteur  : Akpo Akisch
+ * Auteur  : Jean-Yves
  * Date    : Octobre 2025
  * Description : Gestion de la lecture, écriture et sélection des fichiers de sauvegarde.
  */
@@ -29,8 +29,7 @@ void afficher_resume_partie(const Partie *p);
 // CHARGEMENT RÉEL D'UNE SAUVEGARDE EXISTANTE - PARTIES EN COURS UNIQUEMENT
 // Par Jean-Yves
 void charger_partie() {
-    char saves_path[PATH_MAX];
-    obtenir_chemin_saves(saves_path, sizeof(saves_path));
+    const char *saves_path = obtenir_chemin_saves();
     DIR *dir = opendir(saves_path);
     if (!dir) {
         printf("Impossible d'accéder au dossier des sauvegardes (%s)\n", saves_path);
@@ -39,11 +38,11 @@ void charger_partie() {
     }
 
     struct dirent *entry;
-    char fichiers_en_cours[50][256];
+    char fichiers_en_cours[50][MAX_SAVE_FILENAME_LEN];
     int nb_en_cours = 0;
 
     effacer_ecran();
-    printf("\n=== CHARGER UNE PARTIE EN COURS ===\n\n");
+    printf("\n  CHARGER UNE PARTIE EN COURS  \n\n");
 
     // Parcourir le répertoire et filtrer les parties EN_COURS
     while ((entry = readdir(dir)) != NULL) {
@@ -54,10 +53,6 @@ void charger_partie() {
 
         // Vérifier si la partie est EN_COURS
         char chemin_complet[PATH_MAX];
-        if (strlen(saves_path) + strlen(entry->d_name) + 1 > PATH_MAX) {
-            printf("Erreur: Le chemin du fichier de sauvegarde est trop long.\n");
-            continue;
-        }
         snprintf(chemin_complet, sizeof(chemin_complet), "%s%s", saves_path, entry->d_name);
         FILE *f = fopen(chemin_complet, "r");
         if (!f) continue;
@@ -113,11 +108,6 @@ void charger_partie() {
 
     // Charger la partie sélectionnée
     char chemin_complet[PATH_MAX];
-    if (strlen(saves_path) + strlen(fichiers_en_cours[choix - 1]) + 1 > PATH_MAX) {
-        printf("Erreur: Le chemin du fichier de sauvegarde est trop long.\n");
-        attendre_entree();
-        return;
-    }
     snprintf(chemin_complet, sizeof(chemin_complet), "%s%s", saves_path, fichiers_en_cours[choix - 1]);
     Partie partie;
     memset(&partie, 0, sizeof(Partie));
@@ -219,9 +209,9 @@ int load_partie_from_file(const char *chemin, Partie *out) {
                 strncpy(out->etat, p, sizeof(out->etat)-1);
             }
             continue;
-        } else if (strstr(ligne, "=== HISTORIQUE DES COUPS ===")) {
+        } else if (strstr(ligne, "  HISTORIQUE DES COUPS  ")) {
             in_historique = 1; in_plateau = 0; continue;
-        } else if (strstr(ligne, "=== PLATEAU FINAL ===")) {
+        } else if (strstr(ligne, "  PLATEAU FINAL  ")) {
             in_historique = 0; in_plateau = 1; plateau_row = 0; continue;
         }
 
@@ -267,10 +257,7 @@ int load_partie_from_file(const char *chemin, Partie *out) {
 int sauvegarder_partie(const char *joueur1, const char *joueur2, char symJ1, char symJ2, 
                         int nb_coups, const Coup *coups, const Plateau *plateau_final, const char *etat,
                         const char *nom_fichier_cible) {
-    if (!joueur1 || !joueur2 || !coups || !plateau_final) return -1;
-
-    char saves_path[PATH_MAX];
-    obtenir_chemin_saves(saves_path, sizeof(saves_path));
+    const char *saves_path = obtenir_chemin_saves();
     
     // Créer le répertoire s'il n'existe pas
     // Retirer le slash final pour mkdir
@@ -306,7 +293,7 @@ int sauvegarder_partie(const char *joueur1, const char *joueur2, char symJ1, cha
         mkdir(saves_dir, 0755);
     #endif
 
-    char nom_fichier[256];
+    char nom_fichier[MAX_SAVE_FILENAME_LEN];
     char chemin_complet[PATH_MAX];
     time_t t = time(NULL);
     struct tm *tm_info = localtime(&t);
@@ -320,10 +307,6 @@ int sauvegarder_partie(const char *joueur1, const char *joueur2, char symJ1, cha
         strftime(nom_fichier, sizeof(nom_fichier), "partie_%Y-%m-%d_%H-%M-%S.txt", tm_info);
     }
 
-    if (strlen(saves_path) + strlen(nom_fichier) + 1 > PATH_MAX) {
-        printf("Erreur: Le chemin du fichier de sauvegarde est trop long.\n");
-        return -1;
-    }
     snprintf(chemin_complet, sizeof(chemin_complet), "%s%s", saves_path, nom_fichier);
 
     FILE *f = fopen(chemin_complet, "w");
@@ -345,14 +328,14 @@ int sauvegarder_partie(const char *joueur1, const char *joueur2, char symJ1, cha
     fprintf(f, "#############################################\n\n");
 
     // Historique des coups
-    fprintf(f, "=== HISTORIQUE DES COUPS ===\n");
+    fprintf(f, "  HISTORIQUE DES COUPS  \n");
     for (int i = 0; i < nb_coups; ++i) {
         fprintf(f, "Coup %d : %c joue (%d,%d)\n", i + 1, coups[i].joueur, coups[i].ligne + 1, coups[i].colonne + 1);
     }
     fprintf(f, "\n");
 
     // Plateau final
-    fprintf(f, "=== PLATEAU FINAL ===\n");
+    fprintf(f, "  PLATEAU FINAL  \n");
     for (int i = 0; i < 3; ++i) {
         for (int j = 0; j < 3; ++j)
             fprintf(f, "%c ", plateau_final->cases[i][j]);
@@ -368,14 +351,8 @@ int sauvegarder_partie(const char *joueur1, const char *joueur2, char symJ1, cha
 
 // SUPPRESSION D'UNE SAUVEGARDE
 void supprimer_sauvegarde(const char *nom_fichier) {
-    char saves_path[PATH_MAX];
-    obtenir_chemin_saves(saves_path, sizeof(saves_path));
+    const char *saves_path = obtenir_chemin_saves();
     char chemin_complet[PATH_MAX];
-    if (strlen(saves_path) + strlen(nom_fichier) + 1 > PATH_MAX) {
-        printf("Erreur: Le chemin du fichier de sauvegarde est trop long.\n");
-        attendre_entree();
-        return;
-    }
     snprintf(chemin_complet, sizeof(chemin_complet), "%s%s", saves_path, nom_fichier);
 
     if (remove(chemin_complet) == 0)

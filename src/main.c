@@ -1,6 +1,6 @@
 /*
  * Fichier : main.c
- * Auteur  : Akpo Akisch (Chef de projet)
+ * Auteur  : Akpo Akisch
  * Date    : Octobre 2025
  * Description : Point d'entrée du programme Morpion BE 2026
  */
