@@ -10,35 +10,30 @@
 #include <string.h>
 #include <dirent.h>
 #include <time.h>
+#include <unistd.h>
+#include <sys/stat.h>
+#include <sys/types.h>
+#include <limits.h>
+#ifdef _WIN32
+#include <direct.h>
+#endif
+#ifndef PATH_MAX
+#define PATH_MAX 4096
+#endif
 #include "ui.h"
 #include "save.h"
 #include "utils.h"
-
-
-#define DOSSIER_SAVES "../data/saves/"
-
-void afficher_resume_partie(const Partie *p);
-
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <dirent.h>
-#include <time.h>
-#include "ui.h"
-#include "save.h"
-#include "utils.h"
-
-
-#define DOSSIER_SAVES "../data/saves/"
 
 void afficher_resume_partie(const Partie *p);
 
 // CHARGEMENT RÉEL D'UNE SAUVEGARDE EXISTANTE - PARTIES EN COURS UNIQUEMENT
 // Par Jean-Yves
 void charger_partie() {
-    DIR *dir = opendir(DOSSIER_SAVES);
+    char saves_path[PATH_MAX];
+    obtenir_chemin_saves(saves_path, sizeof(saves_path));
+    DIR *dir = opendir(saves_path);
     if (!dir) {
-        printf("Impossible d'accéder au dossier des sauvegardes (%s)\n", DOSSIER_SAVES);
+        printf("Impossible d'accéder au dossier des sauvegardes (%s)\n", saves_path);
         attendre_entree();
         return;
     }
@@ -59,7 +54,7 @@ void charger_partie() {
 
         // Vérifier si la partie est EN_COURS
         char chemin_complet[512];
-        snprintf(chemin_complet, sizeof(chemin_complet), "%s%s", DOSSIER_SAVES, entry->d_name);
+        snprintf(chemin_complet, sizeof(chemin_complet), "%s%s", saves_path, entry->d_name);
         FILE *f = fopen(chemin_complet, "r");
         if (!f) continue;
 
@@ -111,7 +106,7 @@ void charger_partie() {
 
     // Charger la partie sélectionnée
     char chemin_complet[512];
-    snprintf(chemin_complet, sizeof(chemin_complet), "%s%s", DOSSIER_SAVES, fichiers_en_cours[choix - 1]);
+    snprintf(chemin_complet, sizeof(chemin_complet), "%s%s", saves_path, fichiers_en_cours[choix - 1]);
     Partie partie;
     memset(&partie, 0, sizeof(Partie));
 
@@ -206,7 +201,6 @@ int load_partie_from_file(const char *chemin, Partie *out) {
             sscanf(ligne, "# Nombre de coups : %d", &out->nb_coups);
             continue;
         } else if (strstr(ligne, "# État :")) {
-            char val[64] = {0};
             char *p = strchr(ligne, ':');
             if (p) {
                 p++; while (*p == ' ') p++;
@@ -234,10 +228,14 @@ int load_partie_from_file(const char *chemin, Partie *out) {
         }
 
         if (in_plateau && ligne[0] != '#' && ligne[0] != '\n' && ligne[0] != '=') {
+            // Le format sauvegardé est "X O   \n" (caractère, espace, caractère, espace, caractère, \n)
+            // Les cases sont aux positions 0, 2, 4 de chaque ligne
+            // On lit directement les caractères aux positions paires (0, 2, 4)
             int col_count = 0;
-            for (int i = 0; i < (int)strlen(ligne) && col_count < 3; ++i) {
-                if (ligne[i] != ' ' && ligne[i] != '|' && ligne[i] != '-' && ligne[i] != '\n') {
-                    out->plateau.cases[plateau_row][col_count++] = ligne[i];
+            for (int pos = 0; pos < (int)strlen(ligne) && col_count < 3 && plateau_row < 3; pos += 2) {
+                if (ligne[pos] != '\n' && ligne[pos] != '\r' && ligne[pos] != '\0') {
+                    out->plateau.cases[plateau_row][col_count] = ligne[pos];
+                    col_count++;
                 }
             }
             if (col_count > 0) plateau_row++;
@@ -260,11 +258,41 @@ int sauvegarder_partie(const char *joueur1, const char *joueur2, char symJ1, cha
                         const char *nom_fichier_cible) {
     if (!joueur1 || !joueur2 || !coups || !plateau_final) return -1;
 
+    char saves_path[PATH_MAX];
+    obtenir_chemin_saves(saves_path, sizeof(saves_path));
+    
     // Créer le répertoire s'il n'existe pas
+    // Retirer le slash final pour mkdir
+    char saves_dir[PATH_MAX];
+    strncpy(saves_dir, saves_path, sizeof(saves_dir) - 1);
+    saves_dir[sizeof(saves_dir) - 1] = '\0';
+    size_t len = strlen(saves_dir);
+    if (len > 0 && saves_dir[len - 1] == '/') {
+        saves_dir[len - 1] = '\0';
+    }
+    
+    // Créer récursivement les répertoires manuellement
+    char *p = saves_dir;
+    if (*p == '/') p++; // Skip leading / on Unix
+    
+    while (*p) {
+        if (*p == '/' || *p == '\\') {
+            char save_char = *p;
+            *p = '\0';
+            #ifdef _WIN32
+                _mkdir(saves_dir);
+            #else
+                mkdir(saves_dir, 0755); // Ignore error if exists
+            #endif
+            *p = save_char;
+        }
+        p++;
+    }
+    // Créer le dernier niveau
     #ifdef _WIN32
-        system("if not exist \"../data/saves\" mkdir \"../data/saves\"");
+        _mkdir(saves_dir);
     #else
-        system("mkdir -p ../data/saves");
+        mkdir(saves_dir, 0755);
     #endif
 
     char nom_fichier[256];
@@ -281,7 +309,7 @@ int sauvegarder_partie(const char *joueur1, const char *joueur2, char symJ1, cha
         strftime(nom_fichier, sizeof(nom_fichier), "partie_%Y-%m-%d_%H-%M-%S.txt", tm_info);
     }
 
-    snprintf(chemin_complet, sizeof(chemin_complet), "%s%s", DOSSIER_SAVES, nom_fichier);
+    snprintf(chemin_complet, sizeof(chemin_complet), "%s%s", saves_path, nom_fichier);
 
     FILE *f = fopen(chemin_complet, "w");
     if (!f) {
@@ -325,8 +353,10 @@ int sauvegarder_partie(const char *joueur1, const char *joueur2, char symJ1, cha
 
 // SUPPRESSION D'UNE SAUVEGARDE
 void supprimer_sauvegarde(const char *nom_fichier) {
+    char saves_path[PATH_MAX];
+    obtenir_chemin_saves(saves_path, sizeof(saves_path));
     char chemin_complet[512];
-    snprintf(chemin_complet, sizeof(chemin_complet), "%s%s", DOSSIER_SAVES, nom_fichier);
+    snprintf(chemin_complet, sizeof(chemin_complet), "%s%s", saves_path, nom_fichier);
 
     if (remove(chemin_complet) == 0)
         printf("Sauvegarde '%s' supprimée avec succès.\n", nom_fichier);

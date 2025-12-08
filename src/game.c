@@ -10,11 +10,16 @@
 #include "save.h"
 #include "stats.h"
 #include "help.h"
+#include "utils.h"
 
 #include <stdio.h>
 #include <string.h>
 #include <ctype.h>
 #include <dirent.h>
+#include <limits.h>
+#ifndef PATH_MAX
+#define PATH_MAX 4096
+#endif
 
 // Par Jean-Yves
 void nouvelle_partie(void) {
@@ -181,9 +186,11 @@ void revisualiser_partie(void) {
     Partie partie;
     memset(&partie, 0, sizeof(Partie));
 
-    DIR *dir = opendir("../data/saves/");
+    char saves_path[PATH_MAX];
+    obtenir_chemin_saves(saves_path, sizeof(saves_path));
+    DIR *dir = opendir(saves_path);
     if (!dir) {
-        printf("Impossible d'accéder au dossier des sauvegardes.\n");
+        printf("Impossible d'accéder au dossier des sauvegardes (%s).\n", saves_path);
         attendre_entree();
         return;
     }
@@ -227,7 +234,7 @@ void revisualiser_partie(void) {
     }
 
     char chemin_complet[512];
-    snprintf(chemin_complet, sizeof(chemin_complet), "../data/saves/%s", fichiers[choix - 1]);
+    snprintf(chemin_complet, sizeof(chemin_complet), "%s%s", saves_path, fichiers[choix - 1]);
     FILE *f = fopen(chemin_complet, "r");
     if (!f) {
         printf("Erreur d'ouverture du fichier.\n");

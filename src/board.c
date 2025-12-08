@@ -6,6 +6,11 @@
 #include "board.h"
 #include <stdio.h>
 
+// Codes de couleur ANSI pour les pions
+#define RESET "\x1b[0m"
+#define ROUGE "\x1b[31m"
+#define BLEU "\x1b[34m"
+
 // Par Jean-Yves
 void initialiser_plateau(Plateau *p) {
     for (int i = 0; i < TAILLE; ++i) {
@@ -18,17 +23,37 @@ void initialiser_plateau(Plateau *p) {
 // Par Jean-Yves
 void afficher_plateau(const Plateau *p) {
     printf("\n");
+    
+    // Afficher les numéros de colonnes en haut
+    printf("    1   2   3\n");
+    printf("  ┌───┬───┬───┐\n");
+    
     for (int i = 0; i < TAILLE; ++i) {
-        printf(" ");
+        // Afficher le numéro de ligne
+        printf("%d │", i + 1);
+        
         for (int j = 0; j < TAILLE; ++j) {
-            printf(" %c ", p->cases[i][j]);
-                if (j < TAILLE - 1) printf("|");
+            char symbole = p->cases[i][j];
+            
+            // Appliquer la couleur selon le symbole
+            if (symbole == 'X') {
+                printf(" %sX%s │", BLEU, RESET);
+            } else if (symbole == 'O') {
+                printf(" %sO%s │", ROUGE, RESET);
+            } else {
+                printf("   │");
+            }
         }
         printf("\n");
+        
+        // Lignes de séparation
         if (i < TAILLE - 1) {
-            printf("---+---+---\n");
+            printf("  ├───┼───┼───┤\n");
         }
     }
+    
+    // Ligne inférieure
+    printf("  └───┴───┴───┘\n\n");
 }
 
 // Par Jean-Yves
