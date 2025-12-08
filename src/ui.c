@@ -74,7 +74,7 @@ void afficher_logo(void) {
 
 void afficher_bienvenue(void) {
     printf("%sBienvenue dans le jeu du Morpion !%s\n\n", VERT, RESET);
-    printf("%sVeillez Patienter quelleque secondes!%s\n\n", VERT, RESET);
+    printf("%sVeillez Patienter quellesque secondes!%s\n\n", VERT, RESET);
     pause_courte(2000);
 }
 
