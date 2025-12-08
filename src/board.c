@@ -1,6 +1,10 @@
 /*
  * Fichier : board.c
- * Description : Gestion du plateau de jeu (affichage et logique basique)
+ * Auteur  : Jean-Yves
+ * Date    : Octobre 2025
+ * Description : Gestion du plateau de jeu, incluant l'initialisation, 
+ *               l'affichage stylisé et la logique de base (jouer un coup, 
+ *               vérification de victoire et de match nul).
  */
 
 #include "board.h"
@@ -20,6 +24,8 @@ void initialiser_plateau(Plateau *p) {
     }
 }
 
+// Affiche le plateau de jeu avec une grille stylisée et des couleurs pour les joueurs.
+// 'X' est affiché en bleu et 'O' en rouge.
 // Par Jean-Yves
 void afficher_plateau(const Plateau *p) {
     printf("\n");
@@ -37,9 +43,9 @@ void afficher_plateau(const Plateau *p) {
             
             // Appliquer la couleur selon le symbole
             if (symbole == 'X') {
-                printf(" %sX%s │", BLEU, RESET);
+                printf(" %sX%s │", BLEU, RESET); // 'X' en bleu
             } else if (symbole == 'O') {
-                printf(" %sO%s │", ROUGE, RESET);
+                printf(" %sO%s │", ROUGE, RESET); // 'O' en rouge
             } else {
                 printf("   │");
             }

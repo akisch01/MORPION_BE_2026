@@ -12,5 +12,6 @@ void lancer_tournoi(void);
 void afficher_statistiques(void);
 void afficher_aide(void);
 void nouvelle_partie_reprise(const Partie *p);
+int jouer_une_partie_interne(Joueur *j1, Joueur *j2, int ia_level_j1, int ia_level_j2, int is_tournament);
 
 #endif

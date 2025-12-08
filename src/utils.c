@@ -1,3 +1,12 @@
+/*
+ * Fichier : utils.c
+ * Auteur  : Équipe du projet
+ * Date    : Décembre 2025
+ * Description : Fonctions utilitaires générales pour le projet, telles que 
+ *               la gestion des dates, des chemins de fichiers et des entrées 
+ *               utilisateur sécurisées.
+ */
+
 #include <stdio.h>
 #include <time.h>
 #include <string.h>
@@ -27,4 +36,18 @@ void obtenir_chemin_saves(char *path, size_t size) {
         // Fallback sur chemin relatif
         strncpy(path, "../data/saves/", size);
     }
+}
+
+int lire_entree_utilisateur(char *buffer, size_t taille) {
+    if (fgets(buffer, taille, stdin) != NULL) {
+        // Enlever le newline
+        buffer[strcspn(buffer, "\n")] = 0;
+        // Si l'entrée était trop longue, vider le reste du buffer stdin
+        if (strlen(buffer) == taille - 1 && buffer[taille - 2] != '\n') {
+            int ch;
+            while ((ch = getchar()) != '\n' && ch != EOF);
+        }
+        return 1;
+    }
+    return 0;
 }

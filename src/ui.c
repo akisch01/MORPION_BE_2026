@@ -12,6 +12,7 @@
   #include <unistd.h>
 #endif
 #include "ui.h"
+#include "utils.h"
 
 
 #define RESET "\x1b[0m"
@@ -91,13 +92,14 @@ void afficher_menu_principal(void) {
 }
 
 int choisir_option_menu(void) {
-    int choix;
-    if (scanf("%d", &choix) != 1) {
-        while (getchar() != '\n');
-        return -1;
+    char buffer[16];
+    if (lire_entree_utilisateur(buffer, sizeof(buffer))) {
+        int choix;
+        if (sscanf(buffer, "%d", &choix) == 1) {
+            return choix;
+        }
     }
-    while (getchar() != '\n');
-    return choix;
+    return -1;
 }
 
 

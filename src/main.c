@@ -8,6 +8,12 @@
 #include <stdio.h>
 #include "ui.h"
 #include "game.h"
+#include "utils.h"
+
+#include <stdio.h>
+#include "ui.h"
+#include "game.h"
+#include "utils.h"
 
 int main(void) {
     initialiser_ui();
@@ -41,17 +47,18 @@ int main(void) {
                 afficher_aide();
                 break;
             case 7: {
-                char confirmation;
+                char confirmation = ' ';
                 do {
                     printf("\nVoulez-vous vraiment quitter ? (o/n) : ");
-                    scanf(" %c", &confirmation);
-                    while (getchar() != '\n'); 
+                    char buffer[16];
+                    if (lire_entree_utilisateur(buffer, sizeof(buffer)) && buffer[0] != '\0') {
+                        confirmation = buffer[0];
+                    }
 
                     if (confirmation == 'o' || confirmation == 'O') {
                         effacer_ecran();
                         printf("Merci d'avoir joué à MORPION BE 2026 !\n");
                         quitter = 1;
-                        break;
                     } else if (confirmation == 'n' || confirmation == 'N') {
                         printf("\nRetour au menu principal...\n");
                         pause_courte(600);
@@ -59,8 +66,7 @@ int main(void) {
                     } else {
                         printf("Entrée invalide. Veuillez taper 'o' ou 'n'.\n");
                     }
-                } while (confirmation != 'o' && confirmation != 'O' &&
-                         confirmation != 'n' && confirmation != 'N');
+                } while (!quitter && (confirmation != 'o' && confirmation != 'O' && confirmation != 'n' && confirmation != 'N'));
                 break;
             }
             default:

@@ -53,7 +53,11 @@ void charger_partie() {
             continue;
 
         // Vérifier si la partie est EN_COURS
-        char chemin_complet[512];
+        char chemin_complet[PATH_MAX];
+        if (strlen(saves_path) + strlen(entry->d_name) + 1 > PATH_MAX) {
+            printf("Erreur: Le chemin du fichier de sauvegarde est trop long.\n");
+            continue;
+        }
         snprintf(chemin_complet, sizeof(chemin_complet), "%s%s", saves_path, entry->d_name);
         FILE *f = fopen(chemin_complet, "r");
         if (!f) continue;
@@ -89,8 +93,11 @@ void charger_partie() {
 
     int choix = 0;
     printf("\nEntrez le numéro de la partie (0 pour annuler) : ");
-    scanf("%d", &choix);
-    while (getchar() != '\n');
+    char buffer_choix[16];
+    lire_entree_utilisateur(buffer_choix, sizeof(buffer_choix));
+    if (sscanf(buffer_choix, "%d", &choix) != 1) {
+        choix = -1; // Invalid input
+    }
 
     if (choix == 0) {
         printf("\nRetour au menu principal...\n");
@@ -105,7 +112,12 @@ void charger_partie() {
     }
 
     // Charger la partie sélectionnée
-    char chemin_complet[512];
+    char chemin_complet[PATH_MAX];
+    if (strlen(saves_path) + strlen(fichiers_en_cours[choix - 1]) + 1 > PATH_MAX) {
+        printf("Erreur: Le chemin du fichier de sauvegarde est trop long.\n");
+        attendre_entree();
+        return;
+    }
     snprintf(chemin_complet, sizeof(chemin_complet), "%s%s", saves_path, fichiers_en_cours[choix - 1]);
     Partie partie;
     memset(&partie, 0, sizeof(Partie));
@@ -131,12 +143,11 @@ void charger_partie() {
         printf("\nChoisissez une option : ");
         
         int action = 0;
-        if (scanf("%d", &action) != 1) {
-            while (getchar() != '\n');
-            printf("Entrée invalide.\n");
-            continue;
+        char buffer_action[16];
+        lire_entree_utilisateur(buffer_action, sizeof(buffer_action));
+        if (sscanf(buffer_action, "%d", &action) != 1) {
+            action = -1; // Invalid input
         }
-        while (getchar() != '\n');
 
         if (action == 1) {
             // Continuer la partie : appeler la reprise dans game.c
@@ -146,16 +157,16 @@ void charger_partie() {
         } else if (action == 2) {
             // Supprimer la partie
             printf("\nConfirmez-vous la suppression ? (O/N) : ");
-            char confirm;
-            if (scanf("%c", &confirm) == 1) {
-                while (getchar() != '\n');
-                if (confirm == 'O' || confirm == 'o') {
-                    supprimer_sauvegarde(fichiers_en_cours[choix - 1]);
-                    attendre_entree();
-                    break;
-                }
-            } else {
-                while (getchar() != '\n');
+            char confirm = ' ';
+            char buffer_confirm[16];
+            if (lire_entree_utilisateur(buffer_confirm, sizeof(buffer_confirm)) && buffer_confirm[0] != '\0') {
+                confirm = buffer_confirm[0];
+            }
+
+            if (confirm == 'O' || confirm == 'o') {
+                supprimer_sauvegarde(fichiers_en_cours[choix - 1]);
+                attendre_entree();
+                break;
             }
             printf("Suppression annulée.\n");
         } else {
@@ -296,7 +307,7 @@ int sauvegarder_partie(const char *joueur1, const char *joueur2, char symJ1, cha
     #endif
 
     char nom_fichier[256];
-    char chemin_complet[512];
+    char chemin_complet[PATH_MAX];
     time_t t = time(NULL);
     struct tm *tm_info = localtime(&t);
 
@@ -309,6 +320,10 @@ int sauvegarder_partie(const char *joueur1, const char *joueur2, char symJ1, cha
         strftime(nom_fichier, sizeof(nom_fichier), "partie_%Y-%m-%d_%H-%M-%S.txt", tm_info);
     }
 
+    if (strlen(saves_path) + strlen(nom_fichier) + 1 > PATH_MAX) {
+        printf("Erreur: Le chemin du fichier de sauvegarde est trop long.\n");
+        return -1;
+    }
     snprintf(chemin_complet, sizeof(chemin_complet), "%s%s", saves_path, nom_fichier);
 
     FILE *f = fopen(chemin_complet, "w");
@@ -355,18 +370,16 @@ int sauvegarder_partie(const char *joueur1, const char *joueur2, char symJ1, cha
 void supprimer_sauvegarde(const char *nom_fichier) {
     char saves_path[PATH_MAX];
     obtenir_chemin_saves(saves_path, sizeof(saves_path));
-    char chemin_complet[512];
+    char chemin_complet[PATH_MAX];
+    if (strlen(saves_path) + strlen(nom_fichier) + 1 > PATH_MAX) {
+        printf("Erreur: Le chemin du fichier de sauvegarde est trop long.\n");
+        attendre_entree();
+        return;
+    }
     snprintf(chemin_complet, sizeof(chemin_complet), "%s%s", saves_path, nom_fichier);
 
     if (remove(chemin_complet) == 0)
         printf("Sauvegarde '%s' supprimée avec succès.\n", nom_fichier);
     else
         printf("Impossible de supprimer '%s'.\n", nom_fichier);
-}
-
-// REPRISE D'UNE PARTIE EN COURS
-// Par Jean-Yves
-void reprendre_partie(void) {
-    printf("[TODO] Reprendre une partie en cours à partir du dernier coup sauvegardé.\n");
-    attendre_entree();
 }
