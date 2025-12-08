@@ -48,29 +48,24 @@ int main(void) {
                 break;
             case 7: {
                 char confirmation = ' ';
-                do {
-                    printf("\nVoulez-vous vraiment quitter ? (o/n) : ");
-                    char buffer[16];
-                    if (lire_entree_utilisateur(buffer, sizeof(buffer)) && buffer[0] != '\0') {
-                        confirmation = buffer[0];
-                    }
+                printf("\nÊtes-vous sûr de vouloir quitter ? (o/n) : ");
+                char buffer[16];
+                if (lire_entree_utilisateur(buffer, sizeof(buffer)) && buffer[0] != '\0') {
+                    confirmation = buffer[0];
+                }
 
-                    if (confirmation == 'o' || confirmation == 'O') {
-                        effacer_ecran();
-                        printf("Merci d'avoir joué à MORPION BE 2026 !\n");
-                        quitter = 1;
-                    } else if (confirmation == 'n' || confirmation == 'N') {
-                        printf("\nRetour au menu principal...\n");
-                        pause_courte(600);
-                        break;
-                    } else {
-                        printf("Entrée invalide. Veuillez taper 'o' ou 'n'.\n");
-                    }
-                } while (!quitter && (confirmation != 'o' && confirmation != 'O' && confirmation != 'n' && confirmation != 'N'));
+                if (confirmation == 'o' || confirmation == 'O') {
+                    effacer_ecran();
+                    printf("Merci d'avoir joué à MORPION BE 2026 ! À bientôt !\n");
+                    quitter = 1;
+                } else {
+                    printf("\nRetour au menu principal...\n");
+                    pause_courte(600);
+                }
                 break;
             }
             default:
-                printf("Choix invalide. Réessayez.\n");
+                printf("\nOption invalide. Veuillez choisir une option entre 1 et 7.\n");
                 attendre_entree();
         }
     }

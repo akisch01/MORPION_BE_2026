@@ -42,7 +42,7 @@ void pause_courte(int ms) {
 }
 
 void attendre_entree(void) {
-    printf("\nAppuyez sur Entrée pour continuer...");
+   // printf("\nAppuyez sur Entrée pour continuer...");
     while (getchar() != '\n');
 }
 
@@ -74,7 +74,8 @@ void afficher_logo(void) {
 
 void afficher_bienvenue(void) {
     printf("%sBienvenue dans le jeu du Morpion !%s\n\n", VERT, RESET);
-    pause_courte(400);
+    printf("%sVeillez Patienter quelleque secondes!%s\n\n", VERT, RESET);
+    pause_courte(2000);
 }
 
 void afficher_menu_principal(void) {

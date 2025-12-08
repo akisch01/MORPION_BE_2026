@@ -10,6 +10,7 @@
 typedef struct {
     char nom[50];
     int victoires;
+    int tournois;
 } PlayerStat;
 
 // Affiche les statistiques actuelles depuis stats.txt
@@ -22,7 +23,7 @@ void afficher_statistiques() {
     }
 
     effacer_ecran();
-    printf("\n=== STATISTIQUES DU JEU ===\n\n");
+    printf("\n\033[1;34m=== STATISTIQUES DU JEU ===\033[0m\n\n");
 
     PlayerStat player_stats[MAX_PLAYERS];
     int num_players = 0;
@@ -32,16 +33,29 @@ void afficher_statistiques() {
     while (fgets(ligne, sizeof(ligne), fichier)) {
         char *gagnant = strstr(ligne, " a gagné le ");
         if (gagnant) {
-            *gagnant = '\0'; // Terminate the string at " a gagné le " to get the player name
+            *gagnant = '\0'; 
             char *nom_joueur = ligne;
-
+            
+            int is_tournoi = (strstr(nom_joueur, "(Tournoi)") != NULL);
+            if (is_tournoi) {
+                // Enlever la mention (Tournoi) pour le comptage
+                char *tournoi_marker = strstr(nom_joueur, " (Tournoi)");
+                if (tournoi_marker) {
+                    *tournoi_marker = '\0';
+                }
+            }
+            
             if (strcmp(nom_joueur, "Match nul") == 0) {
                 match_nuls++;
             } else {
                 int found = 0;
                 for (int i = 0; i < num_players; i++) {
                     if (strcmp(player_stats[i].nom, nom_joueur) == 0) {
-                        player_stats[i].victoires++;
+                        if (is_tournoi) {
+                            player_stats[i].tournois++;
+                        } else {
+                            player_stats[i].victoires++;
+                        }
                         found = 1;
                         break;
                     }
@@ -49,7 +63,8 @@ void afficher_statistiques() {
                 if (!found && num_players < MAX_PLAYERS) {
                     strncpy(player_stats[num_players].nom, nom_joueur, sizeof(player_stats[num_players].nom) - 1);
                     player_stats[num_players].nom[sizeof(player_stats[num_players].nom) - 1] = '\0';
-                    player_stats[num_players].victoires = 1;
+                    player_stats[num_players].victoires = is_tournoi ? 0 : 1;
+                    player_stats[num_players].tournois = is_tournoi ? 1 : 0;
                     num_players++;
                 }
             }
@@ -57,19 +72,24 @@ void afficher_statistiques() {
     }
     fclose(fichier);
 
-    for (int i = 0; i < num_players; i++) {
-        printf("%s: %d victoire(s)\n", player_stats[i].nom, player_stats[i].victoires);
+    if (num_players == 0 && match_nuls == 0) {
+        printf("Aucune statistique à afficher pour le moment.\n");
+    } else {
+        for (int i = 0; i < num_players; i++) {
+            printf("\033[32m%s : %d victoire(s), %d tournoi(s)\033[0m\n", player_stats[i].nom, player_stats[i].victoires, player_stats[i].tournois);
+        }
+        if (match_nuls > 0) {
+            printf("\033[33mMatchs nuls : %d\033[0m\n", match_nuls);
+        }
     }
-    printf("Matchs nuls: %d\n", match_nuls);
 
     printf("\n\033[36mAppuyez sur Entrée pour revenir au menu principal.\033[0m\n");
     attendre_entree();
 }
 
 // Mise à jour automatique après chaque partie
-// Par Jean-Yves
-void mettre_a_jour_statistiques(const char *joueur_gagnant, int duree) {
-    (void)duree;
+// duree = 0 pour une partie normale, 1 pour une victoire de tournoi
+void mettre_a_jour_statistiques(const char *joueur_gagnant, int is_tournoi) {
     if (!joueur_gagnant) return;
 
     FILE *f = fopen("../data/stats.txt", "a");
@@ -83,6 +103,11 @@ void mettre_a_jour_statistiques(const char *joueur_gagnant, int duree) {
     char date_str[64];
     strftime(date_str, sizeof(date_str), "%d/%m/%Y %H:%M", tm_info);
 
-    fprintf(f, "%s a gagné le %s\n", joueur_gagnant, date_str);
+    if (is_tournoi) {
+        fprintf(f, "%s (Tournoi) a gagné le %s\n", joueur_gagnant, date_str);
+    } else {
+        fprintf(f, "%s a gagné le %s\n", joueur_gagnant, date_str);
+    }
+    
     fclose(f);
 }

@@ -82,6 +82,9 @@ Dans docs/Readme.txt
 
 ## ⚙️ Compilation & exécution
 
+### tout system
+make run
+
 ### Sous **Linux / macOS**
 ```bash
 cd src
