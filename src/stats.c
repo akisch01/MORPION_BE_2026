@@ -38,7 +38,6 @@ void afficher_statistiques() {
             
             int is_tournoi = (strstr(nom_joueur, "(Tournoi)") != NULL);
             if (is_tournoi) {
-                // Enlever la mention (Tournoi) pour le comptage
                 char *tournoi_marker = strstr(nom_joueur, " (Tournoi)");
                 if (tournoi_marker) {
                     *tournoi_marker = '\0';
@@ -75,9 +74,16 @@ void afficher_statistiques() {
     if (num_players == 0 && match_nuls == 0) {
         printf("Aucune statistique à afficher pour le moment.\n");
     } else {
+        printf("\033[1;36m┌───────────────────────────┬────────────┬───────────┐\033[0m\n");
+        printf("\033[1;36m│          JOUEUR           │ VICTOIRES  │ TOURNOIS  │\033[0m\n");
+        printf("\033[1;36m├───────────────────────────┼────────────┼───────────┤\033[0m\n");
+
         for (int i = 0; i < num_players; i++) {
-            printf("\033[32m%s : %d victoire(s), %d tournoi(s)\033[0m\n", player_stats[i].nom, player_stats[i].victoires, player_stats[i].tournois);
+            printf("\033[32m│ %-25s │ %-10d │ %-9d │\033[0m\n", player_stats[i].nom, player_stats[i].victoires, player_stats[i].tournois);
         }
+        
+        printf("\033[1;36m└───────────────────────────┴────────────┴───────────┘\033[0m\n\n");
+        
         if (match_nuls > 0) {
             printf("\033[33mMatchs nuls : %d\033[0m\n", match_nuls);
         }

@@ -1,6 +1,8 @@
 [REGLES]
-Le Morpion est un jeu pour deux joueurs, X et O, qui placent à tour de rôle leur marque dans une grille de 3x3.
-Le premier joueur à aligner trois de ses marques horizontalement, verticalement ou en diagonale gagne la partie.
+Le Morpion est un jeu pour deux joueurs, X et O, 
+qui placent à tour de rôle leur marque dans une grille de 3x3.
+Le premier joueur à aligner trois de ses marques horizontalement, 
+verticalement ou en diagonale gagne la partie.
 Si la grille est remplie et qu'aucun joueur n'a gagné, la partie est déclarée nulle.
 
 [COMMANDES]

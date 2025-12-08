@@ -289,7 +289,31 @@ void revisualiser_partie(void) {
     Plateau plateau_replay;
     initialiser_plateau(&plateau_replay);
     
-    // ... (parsing logic) ...
+    char ligne[256];
+    int in_historique = 0;
+    while (fgets(ligne, sizeof(ligne), f)) {
+        if (strstr(ligne, "# Joueur 1 :")) {
+            sscanf(ligne, "# Joueur 1 : %[^ (] (%c)", joueur1, &symboleJ1);
+        } else if (strstr(ligne, "# Joueur 2 :")) {
+            sscanf(ligne, "# Joueur 2 : %[^ (] (%c)", joueur2, &symboleJ2);
+        } else if (strstr(ligne, "=== HISTORIQUE DES COUPS ===")) {
+            in_historique = 1;
+        } else if (in_historique && strstr(ligne, "Coup")) {
+            int coup_num, lig, col;
+            char joueur_sym;
+            if (sscanf(ligne, "Coup %d : %c joue (%d,%d)", &coup_num, &joueur_sym, &lig, &col) == 4) {
+                if (parsed_coups < MAX_COUPS) {
+                    coups[parsed_coups].ligne = lig - 1;
+                    coups[parsed_coups].colonne = col - 1;
+                    coups[parsed_coups].joueur = joueur_sym;
+                    parsed_coups++;
+                }
+            }
+        } else if (in_historique && strlen(ligne) < 2) { // Fin de la section historique
+            in_historique = 0;
+        }
+    }
+    
     fclose(f);
 
     int nb_coups = parsed_coups;

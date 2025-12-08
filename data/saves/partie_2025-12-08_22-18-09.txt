@@ -1,0 +1,17 @@
+#############################################
+# Sauvegarde automatique du : 08/12/2025 22:24:37
+# Joueur 1 : a (O)
+# Joueur 2 : IA (X)
+# Nombre de coups : 2
+# État : EN_COURS
+#############################################
+
+=== HISTORIQUE DES COUPS ===
+Coup 1 : O joue (1,1)
+Coup 2 : X joue (3,1)
+
+=== PLATEAU FINAL ===
+O     
+      
+X     
+#############################################
