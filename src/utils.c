@@ -24,18 +24,7 @@ void obtenir_date_actuelle(char *buffer, int taille) {
 }
 
 void obtenir_chemin_saves(char *path, size_t size) {
-    char cwd[PATH_MAX];
-    if (getcwd(cwd, sizeof(cwd)) != NULL) {
-        // Si on est dans src/, remonter d'un niveau
-        if (strstr(cwd, "/src") != NULL) {
-            snprintf(path, size, "%s/../data/saves/", cwd);
-        } else {
-            snprintf(path, size, "%s/data/saves/", cwd);
-        }
-    } else {
-        // Fallback sur chemin relatif
-        strncpy(path, "../data/saves/", size);
-    }
+    snprintf(path, size, "data/saves/");
 }
 
 int lire_entree_utilisateur(char *buffer, size_t taille) {

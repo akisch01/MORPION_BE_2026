@@ -6,7 +6,7 @@
 
 // Affiche une section spécifique du fichier d'aide
 void afficher_section_aide(const char *section_tag) {
-    FILE *fichier = fopen("../data/help.txt", "r");
+    FILE *fichier = fopen("data/help.txt", "r");
     if (!fichier) {
         printf("⚠️  Impossible de charger le fichier d’aide (help.txt).\n");
         attendre_entree();

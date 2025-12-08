@@ -15,7 +15,7 @@ typedef struct {
 
 // Affiche les statistiques actuelles depuis stats.txt
 void afficher_statistiques() {
-    FILE *fichier = fopen("../data/stats.txt", "r");
+    FILE *fichier = fopen("data/stats.txt", "r");
     if (!fichier) {
         printf("Impossible de charger le fichier de statistiques (stats.txt).\n");
         attendre_entree();
@@ -92,7 +92,7 @@ void afficher_statistiques() {
 void mettre_a_jour_statistiques(const char *joueur_gagnant, int is_tournoi) {
     if (!joueur_gagnant) return;
 
-    FILE *f = fopen("../data/stats.txt", "a");
+    FILE *f = fopen("data/stats.txt", "a");
     if (!f) {
         printf("Impossible d'ouvrir stats.txt pour écriture.\n");
         return;
